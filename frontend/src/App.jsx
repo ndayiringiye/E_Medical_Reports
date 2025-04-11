@@ -1,8 +1,13 @@
-
+import { BrowserRouter, Routes, Route }from "react-router"
+import Home from "./Pages/home"
 const App = () => {
   return (
-    <div>h
-      <p className="text-4xl text-blue-700 underline">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore repudiandae qui unde quia. Aut voluptate quis ea eum rerum ex nemo, nisi magnam repudiandae dolorum nesciunt ut vero expedita. Expedita?</p>
+    <div>
+      <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />}/>
+      </Routes>
+      </BrowserRouter>
     </div>
   )
 }
