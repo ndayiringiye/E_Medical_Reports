@@ -1,7 +1,9 @@
 import { FaUserPlus, FaSignInAlt } from "react-icons/fa";
 import logo from "../../public/images/logo.png";
+import { useNavigate } from "react-router";
 
 const Entry = () => {
+  const navigate = useNavigate();
   return (
     <div className=" flex items-center justify-center bg-gradient-to-br from-gray-400 via-sky-400 to-green-400 px-4">
       <div className=" p-8 w-full max-w-xl text-center space-y-3">
@@ -17,11 +19,11 @@ const Entry = () => {
           </p>
         </div>
         <div className="flex justify-center gap-4 mt-6 flex-wrap">
-          <button className="flex items-center gap-2 px-5 py-3 text-gray-800 bg-gray-200 font-semibold rounded-md ">
+          <button className="flex items-center gap-2 px-5 py-3 text-gray-800 bg-gray-200 font-semibold rounded-md " onClick={() => navigate("/signup")}>
             <FaUserPlus className="text-blue-400 font-bold" />
             Sign Up
           </button>
-          <button className="flex items-center gap-2 px-5 py-3 text-gray-800 font-semibold rounded-md bg-gray-200">
+          <button className="flex items-center gap-2 px-5 py-3 text-gray-800 font-semibold rounded-md bg-gray-200"  onClick={() => navigate("/signin")}>
             <FaSignInAlt className="text-blue-400 font-bold" />
             Sign In
           </button>
