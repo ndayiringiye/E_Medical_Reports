@@ -5,29 +5,19 @@ import { LiaEyeSolid, LiaEyeSlashSolid } from "react-icons/lia";
 import goog from "../../public/images/google (1).png";
 
 const Signin = () => {
-    const [form, setForm] = useState({ username: "", email: "", password: "", confirmPassword: "" });
-    const [error, setError] = useState("");
+    const [form, setForm] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handleChange = e => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
-
     const handleSubmit = e => {
         e.preventDefault();
-        if (form.password !== form.confirmPassword) {
-            setError("Passwords do not match");
-            return;
-        }
-        setError("");
-        console.log("Signed up with:", form);
-    };
 
+    };
     const handleSocialSignup = (provider) => {
         console.log(`Signing up with ${provider}...`);
     };
-
     return (
         <div className="min-h-screen bg-gray-100 flex justify-center items-center px-4">
             <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6">
@@ -67,8 +57,6 @@ const Signin = () => {
                             />
                         )}
                     </div>
-                    {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-
                     <button
                         type="submit"
                         className="w-full py-3 bg-gradient-to-r from-green-400 to-sky-400 text-white font-semibold rounded-md hover:opacity-90 transition"
@@ -105,9 +93,9 @@ const Signin = () => {
                 </div>
 
                 <p className="text-center text-sm text-gray-600">
-                    Already have an account?{" "}
-                    <a href="/signin" className="text-green-600 font-medium hover:underline">
-                        Sign in
+                    Don't have an account yet?{" "}
+                    <a href="/signup" className="text-green-600 font-medium hover:underline">
+                        Signup
                     </a>
                 </p>
             </div>
