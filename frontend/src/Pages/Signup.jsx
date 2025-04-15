@@ -92,39 +92,41 @@ const Signup = () => {
     }
   };
 
-  const handleSocialSignup = async (providerName) => {
-    let provider;
-    switch (providerName) {
-      case "google":
-        provider = googleProvider;
-        break;
-      case "facebook":
-        provider = facebookProvider;
-        break;
-      case "twitter":
-        provider = twitterProvider;
-        break;
-      default:
-        return;
-    }
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      console.log("User signed in:", user);
+const handleSocialSignup = async (providerName) => {
+  if (isSigningIn) return;
 
-      alert("Login successful!");
-    } catch (error) {
-      console.error("Error during sign-in:", error.message);
-      if (error.code === "auth/account-exists-with-different-credential") {
-        alert("An account already exists with a different provider.");
-      } else if (error.code === "auth/user-not-found") {
-        alert("No account found. Please register first.");
-      } else {
-        alert("Authentication failed. Try again.");
-      }
-    }
-  };
+  setIsSigningIn(true);
+
+  let provider;
+
+  switch (providerName) {
+    case "google":
+      provider = googleProvider;
+      break;
+    case "facebook":
+      provider = facebookProvider;
+      break;
+    case "twitter":
+      provider = twitterProvider;
+      break;
+    default:
+      return;
+  }
+
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    console.log("User signed in:", user);
+    alert("Login successful!");
+  } catch (error) {
+    console.error("Error during sign-in:", error.message);
+    alert("Authentication failed: " + error.message);
+  } finally {
+    setIsSigningIn(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center px-4">
