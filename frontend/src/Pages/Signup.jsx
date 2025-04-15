@@ -1,30 +1,60 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; 
 import { FaFacebookF, FaTwitter } from "react-icons/fa";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { LiaEyeSolid, LiaEyeSlashSolid } from "react-icons/lia";
 import { CgProfile } from "react-icons/cg";
 import goog from "../../public/images/google (1).png";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", email: "", password: "", confirmPassword: "" });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+  
     if (form.password !== form.confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-    setError("");
-    console.log("Signed up with:", form);
+  
+    try {
+      setError("");
+  
+      const res = await axios.post(
+        "http://localhost:4000/api/user/signup",
+        {
+          username: form.username,
+          email: form.email,
+          password: form.password,
+          confirmPassword: form.confirmPassword
+        
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("Signup successful:", res.data);
+      await Swal.fire({
+        icon: "success",
+        title: "Account Created!",
+        text: "You have created an account successfully ✅",
+        confirmButtonColor: "#10B981", 
+      });
+      navigate("/signin");
+    } catch (err) {
+      console.error("Signup error:", err.response?.data || err.message);
+      setError(err.response?.data?.message || "Signup failed");
+    }
   };
-
   const handleSocialSignup = (provider) => {
     console.log(`Signing up with ${provider}...`);
   };

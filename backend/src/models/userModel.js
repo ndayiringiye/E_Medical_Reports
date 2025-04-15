@@ -6,14 +6,13 @@ const userSchema = mongoose.Schema({
         required: [true, "username is required"],
         unique: true,
         trim: true,
-
     },
     email: {
         type: String,
         required: true,
         unique: true,
-        minLength: [6, "your email must have 5 character"],
-        lowerCase: true,
+        minLength: [6, "your email must have 5 characters"],
+        lowercase: true, 
         trim: true,
     },
     password: {
@@ -33,7 +32,12 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         default: false,
     },
-}, {timestamp :true});
+    role: {
+        type: String, 
+        enum: ["patient", "doctor", "admin"],
+        default: "patient"
+    }
+}, { timestamps: true }); 
 
 const User = mongoose.model("User", userSchema);
 export default User;

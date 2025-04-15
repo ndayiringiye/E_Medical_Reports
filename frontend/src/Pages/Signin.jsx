@@ -2,7 +2,8 @@ import { useState } from "react";
 import { FaFacebookF, FaTwitter } from "react-icons/fa";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { LiaEyeSolid, LiaEyeSlashSolid } from "react-icons/lia";
-import goog from "../../public/images/google (1).png";
+
+import { useNavigate } from "react-router-dom";
 
 const Signin = () => {
     const [form, setForm] = useState({ email: "", password: "" });

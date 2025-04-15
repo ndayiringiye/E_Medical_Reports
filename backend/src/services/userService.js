@@ -12,7 +12,6 @@ export const signupService = async (req, res) => {
         if (error) {
             return res.status(400).json({ success: false, message: error.details[0].message });
         }
-
         const existUser = await User.findOne({ email });
         if (existUser) {
             return res.status(409).json({ success: false, message: "User already exists" });
@@ -27,7 +26,7 @@ export const signupService = async (req, res) => {
 
         return res.status(201).json({
             success: true,
-            message: "User account created successfully",
+            message: "User user authentication, uploading medical documents, doctor-patient communicationaccount created successfully",
             user: userWithoutPassword
         });
 
@@ -40,8 +39,10 @@ export const signupService = async (req, res) => {
 
 export const signin = async (req, res) => {
     const { email, password } = req.body;
+
     try {
         const value = await signinSchema.validateAsync({ email, password });
+
         const existUser = await User.findOne({ email }).select("+password");
         if (!existUser) {
             return res.status(404).json({ success: false, message: "User does not exist" });
@@ -50,27 +51,42 @@ export const signin = async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ success: false, message: "Invalid credentials" });
         }
-        const token = jwt.sign(
+        const accessToken = jwt.sign(
             {
                 userId: existUser._id,
                 email: existUser.email,
-                verified: existUser.verified
+                verified: existUser.verified,
+                role: existUser.role,
             },
-            process.env.TOKEN_SECRET,
-            { expiresIn: "1h" }
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: "15m" }
         );
-        res.cookie("Authorization", "Bearer " + token, {
-            expires: new Date(Date.now() + 8 * 3600000),
+        const refreshToken = jwt.sign(
+            { userId: existUser._id },
+            process.env.REFRESH_TOKEN_SECRET,
+            { expiresIn: "7d" }
+        );
+        res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production"
+            secure: false,
+            sameSite: "lax",
+            path: "/api/refresh_token", 
+            maxAge: 7 * 24 * 60 * 60 * 1000 
         });
-        res.json({
+        res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            maxAge: 15 * 60 * 1000 
+        });
+        res.status(200).json({
             success: true,
-            token,
-            message: "Logged in successfully"
+            message: "Logged in successfully",
+            accessToken, 
         });
     } catch (error) {
         console.error("Signin Error:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
