@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import { FaFacebookF, FaTwitter } from "react-icons/fa";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { LiaEyeSolid, LiaEyeSlashSolid } from "react-icons/lia";
@@ -7,6 +7,42 @@ import { CgProfile } from "react-icons/cg";
 import goog from "../../public/images/google (1).png";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { initializeApp } from "firebase/app";
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  TwitterAuthProvider,
+} from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDKYhYw-pcB0hx8tL2bxVPXSTOqY7A5uAI",
+  authDomain: "authentication-58e4a.firebaseapp.com",
+  projectId: "authentication-58e4a",
+  storageBucket: "authentication-58e4a.appspot.com", 
+  messagingSenderId: "228752043403",
+  appId: "1:228752043403:web:a04e97b1806aeaad46d38e",
+  measurementId: "G-9687K8WP6Z"
+};
+
+const app = initializeApp(firebaseConfig);
+
+if (typeof window !== "undefined") {
+  import("firebase/analytics").then(({ getAnalytics }) => {
+    getAnalytics(app);
+  });
+}
+
+const auth = getAuth(app);
+
+const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
+const twitterProvider = new TwitterAuthProvider();
+
+googleProvider.setCustomParameters({ prompt: "select_account" });
+facebookProvider.setCustomParameters({ display: "popup" });
+twitterProvider.setCustomParameters({ lang: "en" });
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -14,49 +50,80 @@ const Signup = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const handleChange = e => {
+
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
     if (form.password !== form.confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-  
+
     try {
       setError("");
-  
       const res = await axios.post(
         "http://localhost:4000/api/user/signup",
         {
           username: form.username,
           email: form.email,
           password: form.password,
-          confirmPassword: form.confirmPassword
-        
+          confirmPassword: form.confirmPassword,
         },
         {
           withCredentials: true,
         }
       );
+
       console.log("Signup successful:", res.data);
-      await Swal.fire({
+      Swal.fire({
         icon: "success",
         title: "Account Created!",
         text: "You have created an account successfully ✅",
-        confirmButtonColor: "#10B981", 
+        confirmButtonColor: "#10B981",
+      }).then(() => {
+        navigate("/signin");
       });
-      navigate("/signin");
     } catch (err) {
       console.error("Signup error:", err.response?.data || err.message);
       setError(err.response?.data?.message || "Signup failed");
     }
   };
-  const handleSocialSignup = (provider) => {
-    console.log(`Signing up with ${provider}...`);
+
+  const handleSocialSignup = async (providerName) => {
+    let provider;
+    switch (providerName) {
+      case "google":
+        provider = googleProvider;
+        break;
+      case "facebook":
+        provider = facebookProvider;
+        break;
+      case "twitter":
+        provider = twitterProvider;
+        break;
+      default:
+        return;
+    }
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log("User signed in:", user);
+
+      alert("Login successful!");
+    } catch (error) {
+      console.error("Error during sign-in:", error.message);
+      if (error.code === "auth/account-exists-with-different-credential") {
+        alert("An account already exists with a different provider.");
+      } else if (error.code === "auth/user-not-found") {
+        alert("No account found. Please register first.");
+      } else {
+        alert("Authentication failed. Try again.");
+      }
+    }
   };
 
   return (
@@ -132,6 +199,7 @@ const Signup = () => {
               />
             )}
           </div>
+
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
           <button
@@ -181,3 +249,4 @@ const Signup = () => {
 };
 
 export default Signup;
+export { auth, googleProvider, facebookProvider, twitterProvider };

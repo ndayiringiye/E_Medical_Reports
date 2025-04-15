@@ -4,6 +4,7 @@ import { signupSchema } from "../middleware/validator.js";
 import jwt from "jsonwebtoken";
 import { signinSchema } from "../middleware/validator.js";
 
+
 export const signupService = async (req, res) => {
     const { username, email, password, confirmPassword } = req.body;
 

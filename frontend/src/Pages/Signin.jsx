@@ -2,19 +2,28 @@ import { useState } from "react";
 import { FaFacebookF, FaTwitter } from "react-icons/fa";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { LiaEyeSolid, LiaEyeSlashSolid } from "react-icons/lia";
-
+import goog from "../../public/images/google (1).png";
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios";
 const Signin = () => {
     const [form, setForm] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
-
+    const navigate = useNavigate();
     const handleChange = e => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
-    const handleSubmit = e => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
+        try {
+            const res = await axios.post("http://localhost:4000/api/user/signin", form);
+            console.log("Login success:", res.data);
+            localStorage.setItem("token", res.data.token);
+            navigate("/dashboard");
+        } catch (err) {
+            console.error("Login error:", err.response?.data?.message || err.message);
+            alert(err.response?.data?.message || "Login failed");
+        }
     };
     const handleSocialSignup = (provider) => {
         console.log(`Signing up with ${provider}...`);
