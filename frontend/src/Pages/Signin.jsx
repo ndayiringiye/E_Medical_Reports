@@ -1,4 +1,3 @@
-// Signin.jsx
 import { useState } from "react";
 import { FaFacebookF, FaTwitter } from "react-icons/fa";
 import { MdOutlineMailOutline } from "react-icons/md";
@@ -14,9 +13,7 @@ import {
   FacebookAuthProvider,
   TwitterAuthProvider,
 } from "firebase/auth";
-import NavBar from "../Components/NavBar";
 
-// ✅ Firebase config & initialization (outside component)
 const firebaseConfig = {
   apiKey: "AIzaSyDKYhYw-pcB0hx8tL2bxVPXSTOqY7A5uAI",
   authDomain: "authentication-58e4a.firebaseapp.com",
@@ -116,91 +113,90 @@ const Signin = () => {
 
   return (
     <div>
-    <div className="min-h-screen bg-gray-100 flex justify-center items-center px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6">
-        <h2 className="text-3xl font-bold text-center text-gray-800">Login With your Account</h2>
+      <div className="min-h-screen bg-gray-200 flex justify-center items-center px-4">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6">
+          <h2 className="text-3xl font-bold text-center text-gray-800">Login With your Account</h2>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="relative">
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={form.email}
-              onChange={handleChange}
-              className="w-full px-4 py-3 pr-10 rounded-md border border-gray-300 focus:ring-2 focus:ring-green-400 outline-none text-gray-700"
-            />
-            <MdOutlineMailOutline className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400" />
-          </div>
-
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              placeholder="Password"
-              value={form.password}
-              onChange={handleChange}
-              className="w-full px-4 py-3 pr-10 rounded-md border border-gray-300 focus:ring-2 focus:ring-green-400 outline-none text-gray-700"
-            />
-            {showPassword ? (
-              <LiaEyeSlashSolid
-                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 cursor-pointer"
-                onClick={() => setShowPassword(false)}
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="relative">
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={form.email}
+                onChange={handleChange}
+                className="w-full px-4 py-3 pr-10 rounded-md border border-gray-300 focus:ring-2 focus:ring-green-400 outline-none text-gray-700"
               />
-            ) : (
-              <LiaEyeSolid
-                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 cursor-pointer"
-                onClick={() => setShowPassword(true)}
+              <MdOutlineMailOutline className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400" />
+            </div>
+
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={form.password}
+                onChange={handleChange}
+                className="w-full px-4 py-3 pr-10 rounded-md border border-gray-300 focus:ring-2 focus:ring-green-400 outline-none text-gray-700"
               />
-            )}
+              {showPassword ? (
+                <LiaEyeSlashSolid
+                  className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+                  onClick={() => setShowPassword(false)}
+                />
+              ) : (
+                <LiaEyeSolid
+                  className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+                  onClick={() => setShowPassword(true)}
+                />
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 bg-gradient-to-r from-green-400 to-sky-400 text-white font-semibold rounded-md hover:opacity-90 transition"
+            >
+              Sign In
+            </button>
+          </form>
+
+          <div className="flex items-center gap-4">
+            <hr className="flex-1 border-t border-gray-300" />
+            <span className="text-sm text-gray-500">or continue with</span>
+            <hr className="flex-1 border-t border-gray-300" />
           </div>
 
-          <button
-            type="submit"
-            className="w-full py-3 bg-gradient-to-r from-green-400 to-sky-400 text-white font-semibold rounded-md hover:opacity-90 transition"
-          >
-            Sign In
-          </button>
-        </form>
+          <div className="flex justify-center gap-4">
+            <div
+              onClick={() => handleSocialSignup("facebook")}
+              className="w-10 h-10 flex items-center justify-center bg-blue-600 text-white rounded-full cursor-pointer hover:scale-105 transition"
+            >
+              <FaFacebookF />
+            </div>
 
-        <div className="flex items-center gap-4">
-          <hr className="flex-1 border-t border-gray-300" />
-          <span className="text-sm text-gray-500">or continue with</span>
-          <hr className="flex-1 border-t border-gray-300" />
+            <img
+              src={goog}
+              alt="Google"
+              onClick={() => handleSocialSignup("google")}
+              className="w-10 h-10 cursor-pointer hover:scale-105 transition"
+            />
+
+            <div
+              onClick={() => handleSocialSignup("twitter")}
+              className="w-10 h-10 flex items-center justify-center text-sky-500 border border-sky-500 rounded-full cursor-pointer hover:scale-105 transition"
+            >
+              <FaTwitter />
+            </div>
+          </div>
+
+          <p className="text-center text-sm text-gray-600">
+            Don't have an account yet?{" "}
+            <a href="/signup" className="text-green-600 font-medium hover:underline">
+              Signup
+            </a>
+          </p>
         </div>
-
-        <div className="flex justify-center gap-4">
-          <div
-            onClick={() => handleSocialSignup("facebook")}
-            className="w-10 h-10 flex items-center justify-center bg-blue-600 text-white rounded-full cursor-pointer hover:scale-105 transition"
-          >
-            <FaFacebookF />
-          </div>
-
-          <img
-            src={goog}
-            alt="Google"
-            onClick={() => handleSocialSignup("google")}
-            className="w-10 h-10 cursor-pointer hover:scale-105 transition"
-          />
-
-          <div
-            onClick={() => handleSocialSignup("twitter")}
-            className="w-10 h-10 flex items-center justify-center text-sky-500 border border-sky-500 rounded-full cursor-pointer hover:scale-105 transition"
-          >
-            <FaTwitter />
-          </div>
-        </div>
-
-        <p className="text-center text-sm text-gray-600">
-          Don't have an account yet?{" "}
-          <a href="/signup" className="text-green-600 font-medium hover:underline">
-            Signup
-          </a>
-        </p>
       </div>
-    </div>
-    <NavBar />
     </div>
   );
 };

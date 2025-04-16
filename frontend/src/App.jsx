@@ -1,16 +1,18 @@
 import { BrowserRouter, Routes, Route }from "react-router"
-import Home from "./Pages/home"
 import Signup from "./Pages/Signup"
 import Signin from "./Pages/Signin"
+import Layout from "./Components/Layout"
+import Gates from "./Components/Gates"
 const App = () => {
   return (
     <div>
       <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />}/>
+        <Route element={<Layout />}>
+        <Route path="/" element={<Gates />}/>
         <Route path="/signup" element={<Signup />}/>
         <Route path="/signin" element={<Signin />}/>
-
+        </Route>
 
       </Routes>
       </BrowserRouter>
