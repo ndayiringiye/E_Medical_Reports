@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaFacebookF, FaTwitter } from "react-icons/fa";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { LiaEyeSolid, LiaEyeSlashSolid } from "react-icons/lia";
@@ -157,7 +157,6 @@ const handleSocialSignup = async (providerName) => {
             />
             <MdOutlineMailOutline className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400" />
           </div>
-
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
@@ -179,7 +178,6 @@ const handleSocialSignup = async (providerName) => {
               />
             )}
           </div>
-
           <div className="relative">
             <input
               type={showConfirmPassword ? "text" : "password"}
@@ -201,9 +199,7 @@ const handleSocialSignup = async (providerName) => {
               />
             )}
           </div>
-
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-
           <button
             type="submit"
             className="w-full py-3 bg-gradient-to-r from-green-400 to-sky-400 text-white font-semibold rounded-md hover:opacity-90 transition"
@@ -211,13 +207,11 @@ const handleSocialSignup = async (providerName) => {
             Sign Up
           </button>
         </form>
-
         <div className="flex items-center gap-4">
           <hr className="flex-1 border-t border-gray-300" />
           <span className="text-sm text-gray-500">or continue with</span>
           <hr className="flex-1 border-t border-gray-300" />
         </div>
-
         <div className="flex justify-center gap-4">
           <div
             onClick={() => handleSocialSignup("facebook")}
@@ -238,12 +232,11 @@ const handleSocialSignup = async (providerName) => {
             <FaTwitter />
           </div>
         </div>
-
         <p className="text-center text-sm text-gray-600">
           Already have an account?{" "}
-          <a href="/signin" className="text-green-600 font-medium hover:underline">
+          <Link href="/signin" className="text-green-600 font-medium hover:underline">
             Sign in
-          </a>
+          </Link>
         </p>
       </div>
     </div>
