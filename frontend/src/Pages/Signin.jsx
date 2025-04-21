@@ -87,7 +87,7 @@ const Signin = () => {
       console.log("Social login success:", user);
       localStorage.setItem("token", await user.getIdToken());
       alert(`Welcome, ${user.displayName || user.email}`);
-      navigate("/dashboard");
+      navigate("/symptoms");
     } catch (error) {
       console.error("Social login error:", error.code, error.message);
       switch (error.code) {
