@@ -36,8 +36,6 @@ export const signupService = async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 };
-
-
 export const signin = async (req, res) => {
     const { email, password } = req.body;
 
@@ -48,10 +46,12 @@ export const signin = async (req, res) => {
         if (!existUser) {
             return res.status(404).json({ success: false, message: "User does not exist" });
         }
+
         const isMatch = await bcrypt.compare(password, existUser.password);
         if (!isMatch) {
             return res.status(401).json({ success: false, message: "Invalid credentials" });
         }
+
         const accessToken = jwt.sign(
             {
                 userId: existUser._id,
@@ -62,32 +62,40 @@ export const signin = async (req, res) => {
             process.env.ACCESS_TOKEN_SECRET,
             { expiresIn: "15m" }
         );
+
         const refreshToken = jwt.sign(
             { userId: existUser._id },
             process.env.REFRESH_TOKEN_SECRET,
             { expiresIn: "7d" }
         );
+
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: false,
             sameSite: "lax",
-            path: "/api/refresh_token", 
-            maxAge: 7 * 24 * 60 * 60 * 1000 
+            path: "/api/refresh_token",
+            maxAge: 7 * 24 * 60 * 60 * 1000
         });
+
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
             secure: false,
             sameSite: "lax",
-            maxAge: 15 * 60 * 1000 
+            maxAge: 15 * 60 * 1000
         });
+
         res.status(200).json({
             success: true,
             message: "Logged in successfully",
-            accessToken, 
+            accessToken,
+            role: existUser.role,
+            username: existUser.username,
+            email: existUser.email,
         });
     } catch (error) {
         console.error("Signin Error:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
 

@@ -6,6 +6,8 @@ import { isAdmin } from "../middleware/admin.js";
 import { verifyToken } from "../contrrollers/verifyAdmin.js";
 import { createSymptomsCriteria } from "../services/symptoms.js";
 import { validateAge } from "../middleware/validateAge.js";
+import { getAllSymptoms } from "../services/dashboardService.js";
+import { deleteSymptomService } from "../services/deleteSymptom.js";
 
 const router = express.Router();
 
@@ -14,6 +16,9 @@ router.post("/signin", signin);
 router.post("/refresh_token", refreshAccessToken);
 router.post("/admin",verifyToken, isAdmin, createAdmin);
 router.post("/symptoms", validateAge, createSymptomsCriteria);
+router.get("/getsymptoms", getAllSymptoms);
+router.delete("/:id",deleteSymptomService )
+
 
   
 

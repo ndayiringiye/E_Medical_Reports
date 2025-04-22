@@ -45,20 +45,26 @@ const Signin = () => {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const res = await axios.post("http://localhost:4000/api/user/signin", form);
-      console.log("Login success:", res.data);
-      localStorage.setItem("token", res.data.token);
-      navigate("/dashboard");
+      const { token, role } = res.data;
+
+      localStorage.setItem("token", token);
+
+      if (role === "admin") {
+        navigate("/dashboard");
+      } else if(role === "patient"){
+        navigate("/symptoms");
+      }
     } catch (err) {
       console.error("Login error:", err.response?.data?.message || err.message);
       alert(err.response?.data?.message || "Login failed");
     }
   };
+
 
   const handleSocialSignup = async (providerName) => {
     if (isSigningIn) return;

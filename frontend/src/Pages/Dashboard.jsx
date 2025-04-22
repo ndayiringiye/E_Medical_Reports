@@ -1,0 +1,186 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+const Dashboard = () => {
+  const [symptoms, setSymptoms] = useState([]);
+
+  useEffect(() => {
+    const fetchSymptoms = async () => {
+      try {
+        const res = await axios.get("http://localhost:4000/api/user/getsymptoms");
+        setSymptoms(res.data.data);
+      } catch (error) {
+        console.error("Failed to fetch symptoms:", error);
+      }
+    };
+
+    fetchSymptoms();
+  }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this symptom?")) return;
+
+    try {
+      await axios.delete(`http://localhost:4000/api/user/${id}`);
+      setSymptoms((prev) => prev.filter((symptom) => symptom._id !== id));
+    } catch (error) {
+      console.error("Failed to delete symptom:", error);
+      alert("Delete failed! Try again.");
+    }
+  };
+
+  return (
+    <div className="p-4">
+      <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-white">
+        <div className="flex flex-col sm:flex-row sm:items-center items-stretch justify-between w-full gap-4 p-4">
+          <div className="relative w-full sm:w-auto flex justify-center sm:justify-start">
+            <button
+              id="dropdownRadioButton"
+              className="w-full sm:w-auto inline-flex justify-between items-center text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-2"
+            >
+              <span className="flex items-center">
+                <svg
+                  className="w-3 h-3 text-gray-500 mr-2"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
+                </svg>
+                {new Date().toLocaleDateString()}
+              </span>
+              <svg
+                className="w-2.5 h-2.5 ml-2"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 10 6"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="m1 1 4 4 4-4"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <div className="relative w-full sm:w-auto flex justify-center sm:justify-end">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <svg
+                className="w-5 h-5 text-gray-500"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <input
+              type="text"
+              id="table-search"
+              className="block w-full sm:w-80 p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Search for patients"
+            />
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm text-left text-gray-500">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+              <tr>
+                <th className="p-4">
+                  <input
+                    id="checkbox-all-search"
+                    type="checkbox"
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded"
+                  />
+                </th>
+                {[
+                  "Patient names",
+                  "Email",
+                  "Gender",
+                  "Age",
+                  "Nationality",
+                  "Quartier & Region",
+                  "Symptoms",
+                  "Duration of illness",
+                  "Session",
+                  "Other services",
+                  "Date/Time",
+                  "Delete",
+                  "State Response",
+                ].map((title, i) => (
+                  <th key={i} className="px-6 py-3 whitespace-nowrap">
+                    {title}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+
+            <tbody>
+              {symptoms.map((item, index) => (
+                <tr key={index} className="bg-white border-b">
+                  <td className="p-4">
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded"
+                    />
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">{item.fullName}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{item.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{item.gender}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{item.age}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{item.nationality}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {item.quartier}, {item.region}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {Array.isArray(item.howDoYouFeeling)
+                      ? item.howDoYouFeeling.join(", ")
+                      : item.howDoYouFeeling || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">{item.durationOfDiseases}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{item.session}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {Array.isArray(item.whichOtherSevicesDoYouWant)
+                      ? item.whichOtherSevicesDoYouWant.join(", ")
+                      : item.whichOtherSevicesDoYouWant || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                    {new Date(item.createdAt || Date.now()).toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <button
+                      onClick={() => handleDelete(item._id)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <button
+                      onClick={() => handleStateResponse(item._id)}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-xs"
+                    >
+                      Respond
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+
+          </table>
+          {symptoms.length === 0 && (
+            <div className="p-4 text-center text-gray-400">No data available</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
