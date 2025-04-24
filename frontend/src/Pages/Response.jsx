@@ -31,12 +31,13 @@ const Response = () => {
         content: text,
         timeStamp: new Date().toLocaleTimeString([], {
           hour: "2-digit",
-          minute: "2-digit",
+          minute: "2-digit"
         }),
-        room: "patient",
+        room: patientId 
       });
-
-      toast.success("Message sent successfully!");
+      
+      
+      uccess("Message sent successfully!");
       setText("");
       setHasSent(true);
     } catch (error) {

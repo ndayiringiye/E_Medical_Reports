@@ -9,6 +9,7 @@ import { validateAge } from "../middleware/validateAge.js";
 import { getAllSymptoms } from "../services/dashboardService.js";
 import { deleteSymptomService } from "../services/deleteSymptom.js";
 import {  sendMessage } from "../contrrollers/messageController.js";
+import { getSingleMessageService } from "../services/getSimgleMessage.js";
 
 const router = express.Router();
 
@@ -21,10 +22,7 @@ router.get("/getsymptoms", getAllSymptoms);
 router.delete("/:id",deleteSymptomService );
 router.post("/messages/send", sendMessage);
 router.get("/getSingleSymptom/:id", gettingSingleSymptoms);
+router.get("/getSingleMessage/:id", getSingleMessageService);
 
-
-
-
-  
 
 export default router;

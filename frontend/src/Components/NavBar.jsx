@@ -1,16 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from "../../public/images/logo.png";
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
+import { FaBell } from 'react-icons/fa'; 
 
 const NavBar = () => {
     const [isAboutOpen, setIsAboutOpen] = useState(false);
     const [isServiceOpen, setIsServiceOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [messageCount, setMessageCount] = useState(0);
+    const [isLoggedIn, setIsLoggedIn] = useState(false); 
+
+    useEffect(() => {
+        const token = localStorage.getItem("access_token");
+        if (token) {
+            setIsLoggedIn(true);
+            axios.get("http://localhost:4000/api/user/messages", {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            .then(res => {
+                setMessageCount(res.data.data.length); 
+            })
+            .catch(err => {
+                console.error("Error fetching messages", err);
+            });
+        }
+    }, []);
 
     return (
         <div className="relative">
             <div className="max-w-screen-2xl mx-auto bg-white">
-                <nav className="flex justify-between items-center  px-6 py-3 w-full">
+                <nav className="flex justify-between items-center px-6 py-3 w-full">
                     <div className="flex items-center gap-3">
                         <img src={logo} alt="logo" className="h-14 w-auto" />
                         <h1 className="text-blue-900 font-bold text-xl">E_Medical Reports</h1>
@@ -65,62 +84,17 @@ const NavBar = () => {
                                 </div>
                             )}
                         </div>
-
                         <a href="/moreinfo" className="text-cyan-500 hover:text-blue-900 font-medium text-sm">MORE INFO</a>
-                    </div>
-                    <div className="md:hidden">
-                        <button onClick={() => setMenuOpen(!menuOpen)} className="text-cyan-500 focus:outline-none">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                {menuOpen ? (
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                ) : (
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        <div className="relative">
+                            <Link to="/messages" className="text-cyan-500 hover:text-blue-900 font-medium text-sm flex items-center">
+                                <FaBell size={20} />
+                                {messageCount > 0 && (
+                                    <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">{messageCount}</span>
                                 )}
-                            </svg>
-                        </button>
+                            </Link>
+                        </div>
                     </div>
                 </nav>
-                {menuOpen && (
-                    <div className="md:hidden px-6 pb-4 space-y-2">
-                        <a href="/" className="block text-cyan-500 hover:text-blue-900 font-medium text-sm">HOME</a>
-                        <div>
-                            <button
-                                className="flex items-center w-full text-cyan-500 font-medium text-sm"
-                                onClick={() => setIsAboutOpen(!isAboutOpen)}
-                            >
-                                ABOUT US
-                            </button>
-                            {isAboutOpen && (
-                                <div className="pl-4 mt-2 space-y-1">
-                                    <Link to="/about" className="block text-cyan-500 text-sm">Who We Are</Link>
-                                    <Link to="/team" className="block text-cyan-500 text-sm">Our Team</Link>
-                                    <Link to="/mission" className="block text-cyan-500 text-sm">Mission & Vision</Link>
-                                </div>
-                            )}
-                        </div>
-                        <div>
-                            <button
-                                className="flex items-center w-full text-cyan-500 font-medium text-sm"
-                                onClick={() => setIsServiceOpen(!isServiceOpen)}
-                            >
-                                CLINICAL SERVICES
-                            </button>
-                            {isServiceOpen && (
-                                <div className="pl-4 mt-2 space-y-1">
-                                    <a href="/gbv" className="block text-cyan-500 text-sm">GBV Services</a>
-                                    <Link to="/stis" className="block text-cyan-500 text-sm">STIs Treatment and Prevention</Link>
-                                    <Link to="/reproductive-health" className="block text-cyan-500 text-sm">Reproductive and Sexual Health</Link>
-                                    <Link to="/drug-prevention" className="block text-cyan-500 text-sm">Drug Abuse Prevention & Counseling</Link>
-                                    <Link to="/marriage-counseling" className="block text-cyan-500 text-sm">Marriage Preparation Counseling</Link>
-                                    <Link to="/family-planning" className="block text-cyan-500 text-sm">Family Planning Services</Link>
-                                    <Link to="/life-guidance" className="block text-cyan-500 text-sm">Life Development Guidance</Link>
-                                </div>
-                            )}
-                        </div>
-
-                        <a href="/moreinfo" className="block text-cyan-500 font-medium text-sm">MORE INFO</a>
-                    </div>
-                )}
             </div>
         </div>
     );

@@ -1,19 +1,14 @@
 import Message from "../models/messageModel.js";
 
 export const sendMessage = async (req, res) => {
+  const { sender, content, timeStamp, room } = req.body;
+
   try {
-    const { sender, content, room } = req.body;
-
-    if (!sender || !content || !room) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
-
-    const newMessage = new Message({ sender, content, room });
+    const newMessage = new Message({ sender, content, timeStamp, room });
     const savedMessage = await newMessage.save();
-
-    res.status(201).json({ message: "Message sent", data: savedMessage });
+    res.status(201).json({ success: true, message: "Message sent", data: savedMessage });
   } catch (error) {
-    console.error("Send message error:", error);
-    res.status(500).json({ message: "Error sending message" });
+    console.error("Error sending message:", error);
+    res.status(500).json({ success: false, message: "Failed to send message", error });
   }
 };
