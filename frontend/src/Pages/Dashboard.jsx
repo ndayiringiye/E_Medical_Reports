@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [symptoms, setSymptoms] = useState([]);
+  const navigate = useNavigate();
+
+  const handleStateResponse = (symptomId) => {
+    navigate(`/response/${symptomId}`);
+  };
 
   useEffect(() => {
     const fetchSymptoms = async () => {
@@ -28,6 +34,7 @@ const Dashboard = () => {
       alert("Delete failed! Try again.");
     }
   };
+
 
   return (
     <div className="p-4">
@@ -65,7 +72,6 @@ const Dashboard = () => {
               </svg>
             </button>
           </div>
-
           <div className="relative w-full sm:w-auto flex justify-center sm:justify-end">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
               <svg
@@ -151,21 +157,42 @@ const Dashboard = () => {
                       : item.whichOtherSevicesDoYouWant || "N/A"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                    {new Date(item.createdAt || Date.now()).toLocaleString()}
+                    {new Date(item.createdAt || Date.now()).toLocaleString("en-US", {
+                      weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
+                    })}
+
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <button
                       onClick={() => handleDelete(item._id)}
-                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs"
+                      className="flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs transition-all duration-200"
                     >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
                       Delete
                     </button>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <button
                       onClick={() => handleStateResponse(item._id)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-xs"
+                      className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs transition-all duration-200"
                     >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-6h13M9 17l5-5-5-5" />
+                      </svg>
                       Respond
                     </button>
                   </td>

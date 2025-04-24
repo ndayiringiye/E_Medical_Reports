@@ -6,6 +6,7 @@ import { User, Mail, Calendar, Globe, HeartPulse, CheckCircle } from "lucide-rea
 import surveyPhone from "../../public/images/surveyPhone.png";
 import axios from "axios";
 
+
 const formSteps = [
   { label: "Full Name", name: "fullName", placeholder: "Enter your full name (as on ID)", icon: <User className="text-blue-600" /> },
   { label: "Email", name: "email", placeholder: "Enter your email address", icon: <Mail className="text-blue-600" /> },

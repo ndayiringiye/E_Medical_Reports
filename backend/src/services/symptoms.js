@@ -32,4 +32,14 @@ export const createSymptomsCriteria = async (req, res) => {
         res.status(500).json({ message: "Failed to submit symptom", error: error.message });
         console.log(error)
     }
-}
+};
+
+export const gettingSingleSymptoms = async (req ,res) =>{
+    const {id} = req.params;
+    try {
+        const symptom = await Symptom.findById(id);
+        res.status(200).json({ success: true, message: " single symptom got successfully", data: symptom });
+    } catch (error) {
+        res.status(200).json({success : false, message : " single symptom got failure"});
+    }
+} 
