@@ -53,14 +53,9 @@ export const signin = async (req, res) => {
         }
 
         const accessToken = jwt.sign(
-            {
-                userId: existUser._id,
-                email: existUser.email,
-                verified: existUser.verified,
-                role: existUser.role,
-            },
+            { userId: existUser._id, email: existUser.email, role: existUser.role },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: "15m" }
+            { expiresIn: "1h" }
         );
 
         const refreshToken = jwt.sign(
@@ -71,17 +66,17 @@ export const signin = async (req, res) => {
 
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            secure: false,
+            secure: process.env.NODE_ENV === "production", 
             sameSite: "lax",
-            path: "/api/refresh_token",
-            maxAge: 7 * 24 * 60 * 60 * 1000
+            path: "/api/refresh_token", 
+            maxAge: 7 * 24 * 60 * 60 * 1000, 
         });
 
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
-            secure: false,
+            secure: process.env.NODE_ENV === "production", 
             sameSite: "lax",
-            maxAge: 15 * 60 * 1000
+            maxAge: 15 * 60 * 1000, 
         });
 
         res.status(200).json({
@@ -97,5 +92,17 @@ export const signin = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+export const getUsers = async (req, res) =>{
+    try {
+    const users = await User.find({});
+        res.status(200).json({success : true, data : users, message: "users retrieved successfully"});
+    } catch (error) {
+        res.status(200).json({success : false,  message: "users retrieved failure"});
+        
+    }
+
+}
+
 
 

@@ -34,12 +34,16 @@ export const createSymptomsCriteria = async (req, res) => {
     }
 };
 
-export const gettingSingleSymptoms = async (req ,res) =>{
-    const {id} = req.params;
+
+export const gettingSingleSymptoms = async (req, res) => {
+    const { id } = req.params;
     try {
         const symptom = await Symptom.findById(id);
-        res.status(200).json({ success: true, message: " single symptom got successfully", data: symptom });
+        if (!symptom) {
+            return res.status(404).json({ success: false, message: "Symptom not found" });
+        }
+        res.status(200).json({ success: true, data: symptom, message: "Symptom retrieved successfully" });
     } catch (error) {
-        res.status(200).json({success : false, message : " single symptom got failure"});
+        res.status(500).json({ success: false, message: "Error fetching symptom", error: error });
     }
-} 
+};

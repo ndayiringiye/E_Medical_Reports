@@ -1,30 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import logo from "../../public/images/logo.png";
 import { Link } from 'react-router-dom';
-import { FaBell } from 'react-icons/fa'; 
+import { FaBell } from 'react-icons/fa';
+import axios from 'axios';
 
 const NavBar = () => {
     const [isAboutOpen, setIsAboutOpen] = useState(false);
     const [isServiceOpen, setIsServiceOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [messageCount, setMessageCount] = useState(0);
-    const [isLoggedIn, setIsLoggedIn] = useState(false); 
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+
+
 
     useEffect(() => {
-        const token = localStorage.getItem("access_token");
-        if (token) {
-            setIsLoggedIn(true);
-            axios.get("http://localhost:4000/api/user/messages", {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-            .then(res => {
-                setMessageCount(res.data.data.length); 
-            })
-            .catch(err => {
-                console.error("Error fetching messages", err);
-            });
-        }
+        const fetchUnreadMessagesCount = async () => {
+            try {
+                const response = await axios.get('http://localhost:4000/api/user/unreadMessagesCount');
+                setUnreadMessagesCount(response.data.count);
+            } catch (error) {
+                console.error("Error fetching unread messages count", error);
+            }
+        };
+
+        fetchUnreadMessagesCount();
     }, []);
+
 
     return (
         <div className="relative">
@@ -88,8 +90,10 @@ const NavBar = () => {
                         <div className="relative">
                             <Link to="/messages" className="text-cyan-500 hover:text-blue-900 font-medium text-sm flex items-center">
                                 <FaBell size={20} />
-                                {messageCount > 0 && (
-                                    <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">{messageCount}</span>
+                                {unreadMessagesCount > 0 && (
+                                    <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                                        {unreadMessagesCount}
+                                    </span>
                                 )}
                             </Link>
                         </div>

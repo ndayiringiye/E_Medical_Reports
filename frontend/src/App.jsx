@@ -6,6 +6,7 @@ import Gates from "./Components/Gates"
 import Symptoms from "./Pages/Symptoms"
 import Dashboard from "./Pages/Dashboard"
 import Response from "./Pages/Response"
+import { Message } from "./Pages/Message"
 const App = () => {
   return (
     <div>
@@ -18,6 +19,8 @@ const App = () => {
         <Route path="/symptoms" element={< Symptoms />}/>
         <Route path="/Dashboard" element={< Dashboard />}/>
         <Route path="/response/:symptomId" element={< Response />}/>
+        <Route path="/messages/" element={< Message />}/>
+
         </Route>
       </Routes>
       </BrowserRouter>

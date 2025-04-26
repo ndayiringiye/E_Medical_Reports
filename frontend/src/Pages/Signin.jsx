@@ -53,7 +53,6 @@ const Signin = () => {
       const { token, role } = res.data;
 
       localStorage.setItem("token", token);
-
       if (role === "admin") {
         navigate("/dashboard");
       } else if(role === "patient"){
@@ -64,7 +63,6 @@ const Signin = () => {
       alert(err.response?.data?.message || "Login failed");
     }
   };
-
 
   const handleSocialSignup = async (providerName) => {
     if (isSigningIn) return;
