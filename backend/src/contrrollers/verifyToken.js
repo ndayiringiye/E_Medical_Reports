@@ -21,20 +21,26 @@ export const authenticateToken = (req, res, next) => {
   })
 }
 
-
 export const verifyToken = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1]; 
+  const authHeader = req.headers.authorization;
 
-  if (!token) {
-    return res.status(401).json({ success: false, message: "Access Denied" });
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Access token missing or invalid" });
   }
+
+  const token = authHeader.split(" ")[1];
 
   try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = verified; 
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+    req.user = {
+      id: decoded.userId,
+      email: decoded.email,
+      role: decoded.role,
+    };
+
     next();
   } catch (error) {
-    return res.status(400).json({ success: false, message: "Invalid Token" });
+    return res.status(403).json({ message: "Token verification failed", error: error.message });
   }
 };
-
