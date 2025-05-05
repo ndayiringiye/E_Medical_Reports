@@ -1,5 +1,5 @@
 import express from "express";
-import { getUsers, signin, signupService } from "../services/userService.js";
+import {  getSingleUser, getUsers, signin, signupService } from "../services/userService.js";
 import {  refreshToken } from "../contrrollers/refreshToken.js";
 import { createAdmin } from "../services/admin.js";
 import { isAdmin } from "../middleware/admin.js";
@@ -12,9 +12,9 @@ import {  sendMessage } from "../contrrollers/messageController.js";
 import { getAllMessage, getSingleMessageService, getUnreadMessagesCount } from "../services/getSimgleMessage.js";
 import { handleVideoUpload, uploadMiddleware, } from "../services/uploadService.js";
 import { sendEmail } from "../contrrollers/sendMail.js";
+import { searchSymptom } from "../contrrollers/searchSymptoms.js";
 
 const router = express.Router();
-
 router.post("/signup", signupService);
 router.post("/signin", signin);
 router.post("/refresh_token", refreshToken);
@@ -30,7 +30,7 @@ router.get("/unreadMessagesCount", getUnreadMessagesCount);
 router.get("/getUsers", getUsers);
 router.post("/upload",uploadMiddleware, handleVideoUpload);
 router.post("/sendEmail",verifyToken, isAdmin, sendEmail);
-
-
+router.get("/getsingleUser/:id", getSingleUser);
+router.get("/searchsymptom", searchSymptom);
 
 export default router;

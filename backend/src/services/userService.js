@@ -105,4 +105,26 @@ export const getUsers = async (req, res) =>{
 }
 
 
+export const getSingleUser = async (req, res) => {
+    try {
+      const userId = req.params.id;  
+      const user = await User.findById(userId);
+  
+      if (!user) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+  
+      res.status(200).json({
+        success: true,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Failed to retrieve user" });
+    }
+};
+
+  
+
 

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import message from "../../public/images/message.png";
 import { FaPaperPlane } from "react-icons/fa";
-import { toast, ToastContainer } from 'react-toastify'; 
+import { toast, ToastContainer } from 'react-toastify';
 
 const Response = () => {
   const { symptomId } = useParams();
@@ -11,13 +11,13 @@ const Response = () => {
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState("");
   const [hasSent, setHasSent] = useState(false);
-  const [users, setUsers] = useState([]); 
-  const [selectedReceiverId, setSelectedReceiverId] = useState(""); 
-
+  const [users, setUsers] = useState([]);
+  const [selectedReceiverId, setSelectedReceiverId] = useState("");
+  const [receiverEmail, setReceiverEmail] = useState("");
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/api/user/getUsers"); 
+        const res = await axios.get("http://localhost:4000/api/user/getUsers");
         setUsers(res.data.data);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -25,47 +25,40 @@ const Response = () => {
       }
     };
 
-    fetchUsers(); 
+    fetchUsers();
   });
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    if (hasSent) {
-      toast.info("Message has already been sent.");
-      return;
-    }
-
-    if (!text.trim()) {
-      toast.warning("Please enter a message.");
-      return;
-    }
-
-    if (!selectedReceiverId) {
-      toast.warning("Please select a recipient.");
-      return;
-    }
-
-    const room = "admin-to-patient"; 
     try {
-      setLoading(true);
-      await axios.post("http://localhost:4000/api/user/messages/send", {
-        sender: "admin", 
-        receiver: selectedReceiverId, 
-        content: text,
-        timeStamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        room: room,
+
+      const payload = {
+        to: [receiverEmail],
+        subject: "Health Update",
+        text,
+        from: "admin@nursing123gmail.com",
+      };
+      const token = localStorage.getItem("accessToken");
+
+      if (!token) {
+        console.error("No access token found. User might not be logged in.");
+        return;
+      }
+      const response = await axios.post("http://localhost:4000/api/user/sendEmail", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      toast.success("Message sent successfully!");
+      alert("Email sent successfully!");
+      console.log(response.data);
+      setReceiverEmail("");
       setText("");
-      setHasSent(true);
     } catch (error) {
-      console.error("Error sending message:", error);
-      toast.error("Failed to send message.");
+      console.error("Failed to send email:", error);
+      alert("Failed to send email.");
     } finally {
       setLoading(false);
     }
@@ -89,7 +82,7 @@ const Response = () => {
 
   return (
     <div>
-      <ToastContainer /> 
+      <ToastContainer />
       <div className="min-h-screen bg-gray-100 px-4 py-6 sm:px-6 lg:px-8 flex flex-col items-center">
         <h1 className="text-2xl sm:text-3xl font-semibold text-cyan-700 mb-6 sm:mb-8 text-center">
           Patient Symptom Details
@@ -129,7 +122,7 @@ const Response = () => {
         </div>
         <div className="w-11/12 mx-auto px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          <form
+            <form
               onSubmit={handleSendMessage}
               className="bg-white shadow-lg rounded-2xl p-6 space-y-4"
             >
@@ -139,19 +132,20 @@ const Response = () => {
               </h1>
 
               <div className="mb-4">
-                <label htmlFor="receiver" className="block text-gray-700 text-sm font-bold mb-2">
-                  Select Recipient:
+                <label htmlFor="receiverEmail" className="block text-gray-700 text-sm font-bold mb-2">
+                  Select Recipient Email:
                 </label>
                 <select
-                  id="receiver"
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={selectedReceiverId}
-                  onChange={(e) => setSelectedReceiverId(e.target.value)}
+                  id="receiverEmail"
+                  value={receiverEmail}
+                  onChange={(e) => setReceiverEmail(e.target.value)}
+                  className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
+                  required
                 >
-                  <option value="">-- Select a User --</option>
+                  <option value="">-- Select Patient Email --</option>
                   {users.map((user) => (
-                    <option key={user._id} value={user._id}>
-                      {user.fullName || user.username || user.email}
+                    <option key={user._id} value={user.email}>
+                      {user.email}
                     </option>
                   ))}
                 </select>
@@ -166,9 +160,10 @@ const Response = () => {
                 placeholder="Type your response to the patient here..."
                 className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 p-4 rounded-xl text-gray-700 placeholder-gray-400 resize-none text-base"
               ></textarea>
+
               <button
                 type="submit"
-                disabled={loading || !selectedReceiverId} 
+                disabled={loading || !receiverEmail}
                 className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2 rounded-xl transition duration-300 disabled:opacity-50"
               >
                 {loading ? "Sending..." : "Send Message"}
@@ -191,67 +186,3 @@ const Response = () => {
 export default Response;
 
 
-
-
-//   return (
-//     <div>
-//       <ToastContainer />
-//       <div className="min-h-screen bg-gray-100 px-4 py-6 sm:px-6 lg:px-8 flex flex-col items-center">
-//         {/* ... (your existing UI for symptom details) ... */}
-//         <div className="w-11/12 mx-auto px-4 py-8">
-//           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-//             <form
-//               onSubmit={handleSendMessage}
-//               className="bg-white shadow-lg rounded-2xl p-6 space-y-4"
-//             >
-//               <h1 className="text-2xl font-semibold text-cyan-700 flex items-center gap-2">
-//                 <FaPaperPlane className="text-cyan-500" />
-//                 Respond to Patient
-//               </h1>
-
-//               {/* Add a user selection dropdown */}
-//               <div className="mb-4">
-//                 <label htmlFor="receiver" className="block text-gray-700 text-sm font-bold mb-2">
-//                   Select Recipient:
-//                 </label>
-//                 <select
-//                   id="receiver"
-//                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-//                   value={selectedReceiverId}
-//                   onChange={(e) => setSelectedReceiverId(e.target.value)}
-//                 >
-//                   <option value="">-- Select a User --</option>
-//                   {users.map((user) => (
-//                     <option key={user._id} value={user._id}>
-//                       {user.fullName || user.username || user.email}
-//                     </option>
-//                   ))}
-//                 </select>
-//               </div>
-
-//               <textarea
-//                 name="message"
-//                 id="message"
-//                 value={text}
-//                 onChange={(e) => setText(e.target.value)}
-//                 rows="6"
-//                 placeholder="Type your response to the patient here..."
-//                 className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 p-4 rounded-xl text-gray-700 placeholder-gray-400 resize-none text-base"
-//               ></textarea>
-//               <button
-//                 type="submit"
-//                 disabled={loading || !selectedReceiverId} // Disable if loading or no recipient selected
-//                 className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2 rounded-xl transition duration-300 disabled:opacity-50"
-//               >
-//                 {loading ? "Sending..." : "Send Message"}
-//               </button>
-//             </form>
-//             {/* ... (your image) ... */}
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Response;

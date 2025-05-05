@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { FaFileDownload } from "react-icons/fa"; 
-import * as XLSX from "xlsx"; 
-import jsPDF from "jspdf";
+import { FaFileDownload } from "react-icons/fa";
+import * as XLSX from "xlsx";
 import "jspdf-autotable";
 
 
@@ -11,6 +10,12 @@ import "jspdf-autotable";
 const Dashboard = () => {
   const [symptoms, setSymptoms] = useState([]);
   const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [searcSymptom, setSearchSmptom] = useState(null);
 
   const handleStateResponse = (symptomId) => {
     navigate(`/response/${symptomId}`);
@@ -35,45 +40,6 @@ const Dashboard = () => {
     }
   };
 
-  const downloadPDF = async () => {
-    try {
-      const symptoms = await fetchSymptoms();
-      const tableColumn = [
-        "Full Name",
-        "Email",
-        "Gender",
-        "Age",
-        "Nationality",
-        "Region",
-        "Symptoms",
-        "Duration",
-        "Session",
-      ];
-      const tableRows = symptoms.map((item) => [
-        item.fullName,
-        item.email,
-        item.gender,
-        item.age,
-        item.nationality,
-        `${item.quartier}, ${item.region}`,
-        Array.isArray(item.howDoYouFeeling)
-          ? item.howDoYouFeeling.join(", ")
-          : item.howDoYouFeeling || "N/A",
-        item.durationOfDiseases,
-        item.session,
-      ]);
-      const doc = new jsPDF();
-      doc.autoTable({
-        head: [tableColumn],
-        body: tableRows,
-      });
-      doc.save("symptoms.pdf");
-    } catch (error) {
-      console.error("Failed to download PDF:", error);
-      alert("Failed to download PDF. Try again!");
-    }
-  };
-  
   useEffect(() => {
     const fetchSymptoms = async () => {
       try {
@@ -151,12 +117,49 @@ const Dashboard = () => {
                   />
                 </svg>
               </div>
+
               <input
                 type="text"
-                id="table-search"
+                value={query}
+                onFocus={() => {
+                  if (results.length > 0) setShowDropdown(true);
+                }}
+                onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                 className="block w-full sm:w-80 p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Search for patients"
               />
+
+              {loading && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="animate-spin h-4 w-4 border-2 border-blue-500 rounded-full border-t-transparent"></div>
+                </div>
+              )}
+
+              {error && (
+                <div className="absolute top-full mt-1 w-full sm:w-80 bg-red-50 text-red-800 text-xs p-2 rounded border border-red-200">
+                  {error}
+                </div>
+              )}
+
+              {showDropdown && results.length > 0 && (
+                <ul className="absolute top-full mt-1 w-full sm:w-80 bg-white border border-gray-200 rounded-lg shadow z-50 max-h-60 overflow-auto">
+                  {results.map((item) => (
+                    <li
+                      key={item._id}
+                      onClick={() => handleSelect(item)}
+                      className="px-4 py-2 text-sm hover:bg-blue-100 cursor-pointer"
+                    >
+                      {item.fullName || item.name || item.howDoYouFeeling || "Unnamed symptom"}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {showDropdown && query && results.length === 0 && !loading && (
+                <div className="absolute top-full mt-1 w-full sm:w-80 bg-white border border-gray-200 rounded-lg shadow z-50 p-3 text-center text-gray-500">
+                  No matching results found
+                </div>
+              )}
             </div>
           </div>
           <div className="overflow-x-auto">
@@ -272,7 +275,6 @@ const Dashboard = () => {
         </div>
       </div>
       <div className="flex justify-center my-6">
-      <div className="flex gap-4">
         <button
           onClick={downloadExcel}
           className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 disabled:opacity-50"
@@ -280,18 +282,8 @@ const Dashboard = () => {
           <FaFileDownload className="w-5 h-5" />
           Download Excel
         </button>
-
-        <button
-          onClick={downloadPDF}
-          className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 disabled:opacity-50"
-        >
-          <FaFileDownload className="w-5 h-5" />
-          Download PDF
-        </button>
       </div>
-    </div>
     </div>
   );
 };
-
 export default Dashboard;

@@ -6,7 +6,7 @@ import Gates from "./Components/Gates"
 import Symptoms from "./Pages/Symptoms"
 import Dashboard from "./Pages/Dashboard"
 import Response from "./Pages/Response"
-import { Message } from "./Pages/Message"
+import { Message } from "./Pages/Message";
 const App = () => {
   return (
     <div>
@@ -27,5 +27,4 @@ const App = () => {
     </div>
   )
 }
-
 export default App

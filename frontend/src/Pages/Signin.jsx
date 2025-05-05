@@ -42,6 +42,7 @@ const Signin = () => {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const navigate = useNavigate();
 
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -50,12 +51,12 @@ const Signin = () => {
 
     try {
       const res = await axios.post("http://localhost:4000/api/user/signin", form);
-      const { token, role } = res.data;
-
-      localStorage.setItem("token", token);
+      const { accessToken, role } = res.data;
+      localStorage.setItem("token", accessToken);
+      
       if (role === "admin") {
         navigate("/dashboard");
-      } else if(role === "patient"){
+      } else if (role === "patient") {
         navigate("/symptoms");
       }
     } catch (err) {
@@ -63,6 +64,43 @@ const Signin = () => {
       alert(err.response?.data?.message || "Login failed");
     }
   };
+
+  const refreshToken = async () => {
+    try {
+      const res = await axios.get("http://localhost:4000/api/refresh_token", {
+        withCredentials: true,
+      });
+
+      const { accessToken } = res.data;
+      localStorage.setItem("token", accessToken);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+      return accessToken;
+    } catch (err) {
+      console.error("Failed to refresh token:", err);
+      return null;
+    }
+  };
+  axios.interceptors.response.use(
+    res => res,
+    async error => {
+      const originalRequest = error.config;
+
+      if (
+        error.response &&
+        error.response.status === 401 &&
+        !originalRequest._retry
+      ) {
+        originalRequest._retry = true;
+        const newToken = await refreshToken();
+        if (newToken) {
+          originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+          return axios(originalRequest);
+        }
+      }
+
+      return Promise.reject(error);
+    }
+  );
 
   const handleSocialSignup = async (providerName) => {
     if (isSigningIn) return;

@@ -1,6 +1,7 @@
 import Home from "../Pages/home"
 import Department from "./Department"
 import { HowWere } from "./HowWere"
+import Testimonies from "./Testimonies"
 import { Unprotected } from "./Unprotected"
 
 const Gates = () => {
@@ -10,6 +11,7 @@ const Gates = () => {
         <HowWere />
         <Unprotected />
         <Department />
+        <Testimonies />
     </div>
   )
 }
