@@ -1,13 +1,12 @@
 import mongoose from "mongoose";
 
-const messageSchema = mongoose.Schema({
-  sender: { type: String, required: true },
-  receiver: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  content: { type: String, required: true },
-  timestamp: { type: Date, default: Date.now },
-  room: { type: String, default: "general" },
-  isRead: { type: Boolean, default: false }  
+const EmailSchema = mongoose.Schema({
+  to: { type: String, required: true },
+  subject: { type: String, required: true },
+  body: { type: String, required: true },
+  sentAt: { type: Date, default: Date.now },
+  status: { type: String, default: 'sent' }
 });
   
-const Message = mongoose.model("Message", messageSchema);
-export default Message;
+const Email = mongoose.model("Email", EmailSchema);
+export default Email;

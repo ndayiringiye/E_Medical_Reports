@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
+import Email from "../models/messageModel.js"; 
 
-const createTransporter = async () => {
+const createTransporter = () => {
   return nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE,
     auth: {
@@ -11,49 +12,46 @@ const createTransporter = async () => {
 };
 
 export const sendEmail = async (req, res) => {
-  const { to, subject, text, html, from, replyTo } = req.body;
-  
-  if (!to || !subject || (!text && !html)) {
-    return res.status(400).json({ 
-      success: false, 
-      message: 'Please provide recipient, subject, and message content' 
-    });
-  }
-  
   try {
-    const transporter = await createTransporter();
-    
+    const { to, subject, text } = req.body;
+
+    if (!to || !subject || !text) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'To, subject, and text are required' 
+      });
+    }
+
     const mailOptions = {
-      from: from || `"Your App Name" <${process.env.EMAIL_USER}>`, 
-      to: Array.isArray(to) ? to.join(',') : to, 
+      from: process.env.EMAIL_USER,
+      to, 
       subject,
-      text, 
-      html: html || text, 
-      replyTo: replyTo || from || process.env.EMAIL_USER
+      html: text
     };
-    
+
+    const transporter = createTransporter();
     const info = await transporter.sendMail(mailOptions);
-    
-    console.log('Email sent: %s', info.messageId);
-    
+
+    const emailRecord = new Email({
+      to,
+      subject,
+      body: text
+    });
+
+    await emailRecord.save();
+
     res.status(200).json({ 
       success: true, 
-      message: 'Email sent successfully',
+      message: 'Email sent successfully', 
+      emailId: emailRecord._id,
       messageId: info.messageId
     });
+
   } catch (error) {
-    console.error('Error sending email:', error);
-    
-    let errorMessage = 'Failed to send email';
-    if (error.code === 'EAUTH') {
-      errorMessage = 'Authentication failed. Please check your email credentials.';
-    } else if (error.code === 'ESOCKET') {
-      errorMessage = 'Network error. Please check your internet connection.';
-    }
-    
+    console.error('Email Send Error:', error);
     res.status(500).json({ 
       success: false, 
-      message: errorMessage,
+      message: 'Failed to send email', 
       error: error.message 
     });
   }

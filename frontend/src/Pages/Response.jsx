@@ -10,9 +10,7 @@ const Response = () => {
   const [symptom, setSymptom] = useState(null);
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState("");
-  const [hasSent, setHasSent] = useState(false);
   const [users, setUsers] = useState([]);
-  const [selectedReceiverId, setSelectedReceiverId] = useState("");
   const [receiverEmail, setReceiverEmail] = useState("");
   useEffect(() => {
     const fetchUsers = async () => {
@@ -24,46 +22,52 @@ const Response = () => {
         toast.error("Failed to load users.");
       }
     };
-
+  
     fetchUsers();
-  });
+  }, []); 
+  
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
-
       const payload = {
-        to: [receiverEmail],
+        to: receiverEmail,  
         subject: "Health Update",
-        text,
-        from: "admin@nursing123gmail.com",
+        text: text,         
+        from: "admin@nursing123gmail.com", 
       };
+      
+  
       const token = localStorage.getItem("accessToken");
-
+  
       if (!token) {
-        console.error("No access token found. User might not be logged in.");
+        toast.error("Admin not authenticated.");
         return;
       }
-      const response = await axios.post("http://localhost:4000/api/user/sendEmail", payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      alert("Email sent successfully!");
+      const response = await axios.post(
+        "http://localhost:4000/api/user/sendEmail",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      toast.success("Email sent successfully!");
       console.log(response.data);
       setReceiverEmail("");
       setText("");
     } catch (error) {
       console.error("Failed to send email:", error);
-      alert("Failed to send email.");
+      toast.error("Failed to send email.");
     } finally {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     const fetchSymptom = async () => {
       try {

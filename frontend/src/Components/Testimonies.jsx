@@ -7,7 +7,7 @@ const impactData = [
   {
     title: "Medical Treatment",
     image: treatment,
-    items: ["HIV and AIDS", "Chlamydia", "Gonorrhea"],
+    items: ["HIV and AIDS", "Chlamydia", "Gonorrhea","Genintal herpes" , "Others"],
     total: 200,
     color: "bg-white border-cyan-500",
   },
@@ -27,14 +27,13 @@ const impactData = [
   {
     title: "Screening & Support",
     image: screening,
-    items: ["Trichomoniasis", "HPV", "HIV", "Others"],
+    items: ["Trichomoniasis", "HPV", "HIV", "Genital herpes", "Others"],
     total: 300,
     color: "bg-white border-green-500",
   },
 ];
 const Testimonies = () => {
   const [counts, setCounts] = useState(impactData.map(() => 0));
-
   useEffect(() => {
     const intervals = impactData.map((data, index) =>
       setInterval(() => {

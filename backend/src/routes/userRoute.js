@@ -8,7 +8,6 @@ import { createSymptomsCriteria, gettingSingleSymptoms } from "../services/sympt
 import { validateAge } from "../middleware/validateAge.js";
 import { getAllSymptoms } from "../services/dashboardService.js";
 import { deleteSymptomService } from "../services/deleteSymptom.js";
-import {  sendMessage } from "../contrrollers/messageController.js";
 import { getAllMessage, getSingleMessageService, getUnreadMessagesCount } from "../services/getSimgleMessage.js";
 import { handleVideoUpload, uploadMiddleware, } from "../services/uploadService.js";
 import { sendEmail } from "../contrrollers/sendMail.js";
@@ -22,7 +21,7 @@ router.post("/admin",verifyToken, isAdmin, createAdmin);
 router.post("/symptoms", validateAge, createSymptomsCriteria);
 router.get("/getsymptoms", getAllSymptoms);
 router.delete("/:id",deleteSymptomService );
-router.post("/messages/send", sendMessage);
+router.post("/email/send", sendEmail);
 router.get("/getSingleSymptom/:id", gettingSingleSymptoms);
 router.get("/getSingleMessage/:id", getSingleMessageService);
 router.get("/getAllMessage", getAllMessage);
