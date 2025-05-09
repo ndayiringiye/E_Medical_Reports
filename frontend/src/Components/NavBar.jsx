@@ -8,20 +8,6 @@ const NavBar = () => {
     const [isAboutOpen, setIsAboutOpen] = useState(false);
     const [isServiceOpen, setIsServiceOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
-    const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
-
-    useEffect(() => {
-        const fetchUnreadMessagesCount = async () => {
-            try {
-                const response = await axios.get('http://localhost:4000/api/user/unreadMessagesCount');
-                setUnreadMessagesCount(response.data.count);
-            } catch (error) {
-                console.error("Error fetching unread messages count", error);
-            }
-        };
-        fetchUnreadMessagesCount();
-    }, []);
-
     const toggleMenu = () => setMenuOpen(!menuOpen);
 
     const navbarHeight = "70px";

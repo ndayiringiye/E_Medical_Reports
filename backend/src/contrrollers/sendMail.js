@@ -1,58 +1,46 @@
 import nodemailer from "nodemailer";
 import Email from "../models/messageModel.js"; 
 
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD
-    }
-  });
-};
-
 export const sendEmail = async (req, res) => {
-  try {
-    const { to, subject, text } = req.body;
+  const {from, to, subject, html } = req.body;
 
-    if (!to || !subject || !text) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'To, subject, and text are required' 
-      });
-    }
+  if ( !from || !subject || !html || !to) {
+    return res.status(400).json({
+      success: false,
+      message: "All fields (title, from, to, subject, html) are required",
+    });
+  }
+  try {
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to, 
-      subject,
-      html: text
-    };
-
-    const transporter = createTransporter();
-    const info = await transporter.sendMail(mailOptions);
-
-    const emailRecord = new Email({
       to,
       subject,
-      body: text
+      html,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({
+      success: true,
+      message: "Email sent successfully",
     });
-
-    await emailRecord.save();
-
-    res.status(200).json({ 
-      success: true, 
-      message: 'Email sent successfully', 
-      emailId: emailRecord._id,
-      messageId: info.messageId
-    });
-
   } catch (error) {
-    console.error('Email Send Error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to send email', 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: "Email sending failed",
+      error,
     });
   }
 };

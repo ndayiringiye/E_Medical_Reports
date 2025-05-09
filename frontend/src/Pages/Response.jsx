@@ -25,35 +25,29 @@ const Response = () => {
   
     fetchUsers();
   }, []); 
-  
+
+  const isValidEmail = (email) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
     setLoading(true);
   
+  if (!isValidEmail(receiverEmail)) {
+    toast.error("Invalid email address");
+    setLoading(false);
+    return;
+  }
     try {
       const payload = {
-        to: receiverEmail,  
-        subject: "Health Update",
-        text: text,         
-        from: "admin@nursing123gmail.com", 
+        from: "ndayiringiyedavid394@gmail.com", 
+        to: receiverEmail,
+        subject: "Welcame to the E_Medical Reports",
+        html: `<p>${text}</p>`,
       };
-      
-  
-      const token = localStorage.getItem("accessToken");
-  
-      if (!token) {
-        toast.error("Admin not authenticated.");
-        return;
-      }
       const response = await axios.post(
-        "http://localhost:4000/api/user/sendEmail",
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        "http://localhost:4000/api/user/email/send",
+        payload
       );
   
       toast.success("Email sent successfully!");
@@ -154,17 +148,15 @@ const Response = () => {
                   ))}
                 </select>
               </div>
-
               <textarea
-                name="message"
-                id="message"
+                name="text"
+                id="text"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 rows="6"
                 placeholder="Type your response to the patient here..."
                 className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 p-4 rounded-xl text-gray-700 placeholder-gray-400 resize-none text-base"
               ></textarea>
-
               <button
                 type="submit"
                 disabled={loading || !receiverEmail}
@@ -186,7 +178,6 @@ const Response = () => {
     </div>
   );
 };
-
 export default Response;
 
 
