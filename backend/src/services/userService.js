@@ -93,6 +93,17 @@ export const signin = async (req, res) => {
     }
 };
 
+export const logggout = async (req, res) => {
+    try {
+        res.clearCookie("accessToken");
+        res.clearCookie("refreshToken", { path: "/api/refresh_token" });
+
+        return res.status(200).json({ success: true, message: "Logged out successfully" });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Logout failed" });
+    }
+};
+
 export const getUsers = async (req, res) =>{
     try {
     const users = await User.find({});

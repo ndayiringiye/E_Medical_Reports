@@ -1,5 +1,5 @@
 import express from "express";
-import {  getSingleUser, getUsers, signin, signupService } from "../services/userService.js";
+import {  getSingleUser, getUsers, logggout, signin, signupService } from "../services/userService.js";
 import {  refreshToken } from "../contrrollers/refreshToken.js";
 import { createAdmin } from "../services/admin.js";
 import { isAdmin } from "../middleware/admin.js";
@@ -31,5 +31,7 @@ router.post("/upload",uploadMiddleware, handleVideoUpload);
 router.post("/sendEmail",verifyToken, isAdmin, sendEmail);
 router.get("/getsingleUser/:id", getSingleUser);
 router.get("/searchsymptom", searchSymptom);
+router.get("/signout", logggout);
+
 
 export default router;

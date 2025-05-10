@@ -1,17 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import logo from "../../public/images/logo.png";
 import { Link } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
+import AuthContext from './AuthContext'; 
 
 const NavBar = () => {
+    const { isLoggedIn, logout } = useContext(AuthContext);
     const [isAboutOpen, setIsAboutOpen] = useState(false);
     const [isServiceOpen, setIsServiceOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const toggleMenu = () => setMenuOpen(!menuOpen);
-
     const navbarHeight = "70px";
-
+    const navigate = useNavigate();
+    
+    const handleLogout = async () => {
+        try {
+            await axios.get("http://localhost:4000/api/user/signout", { withCredentials: true });
+            logout(); 
+            navigate("/signin");
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
+    };
+    
     return (
         <>
             <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
@@ -68,6 +81,14 @@ const NavBar = () => {
                             </div>
 
                             <a href="/moreinfo" className="text-cyan-500 hover:text-blue-900 font-medium text-sm">MORE INFO</a>
+                            {isLoggedIn && (
+                                <button
+                                    onClick={handleLogout}
+                                    className="text-red-500 hover:text-red-700 font-semibold text-sm"
+                                >
+                                    LOGOUT
+                                </button>
+                            )}
                         </div>
                         <div className="md:hidden text-cyan-500 flex items-center">
                             <button onClick={toggleMenu}>
@@ -117,6 +138,14 @@ const NavBar = () => {
                         </div>
 
                         <a href="/moreinfo" className="block text-cyan-500 hover:text-blue-900 text-sm">MORE INFO</a>
+                        {isLoggedIn && (
+                            <button
+                                onClick={handleLogout}
+                                className="text-red-500 hover:text-red-700 font-semibold text-sm"
+                            >
+                                LOGOUT
+                            </button>
+                        )}
                     </div>
                 )}
             </div>

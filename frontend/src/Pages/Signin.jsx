@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useContext } from "react";
 import { FaFacebookF, FaTwitter } from "react-icons/fa";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { LiaEyeSolid, LiaEyeSlashSolid } from "react-icons/lia";
@@ -13,6 +14,7 @@ import {
   FacebookAuthProvider,
   TwitterAuthProvider,
 } from "firebase/auth";
+import AuthContext from '../Components/AuthContext';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDKYhYw-pcB0hx8tL2bxVPXSTOqY7A5uAI",
@@ -41,19 +43,23 @@ const Signin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(false);
   const navigate = useNavigate();
-
+  const { setIsLoggedIn } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const res = await axios.post("http://localhost:4000/api/user/signin", form);
       const { accessToken, role } = res.data;
-      localStorage.setItem("token", accessToken);
-      
+
+      localStorage.setItem("accessToken", accessToken);
+
+      setIsLoggedIn(true);
+
       if (role === "admin") {
         navigate("/dashboard");
       } else if (role === "patient") {
@@ -72,7 +78,7 @@ const Signin = () => {
       });
 
       const { accessToken } = res.data;
-      localStorage.setItem("token", accessToken);
+      localStorage.setItem("accessToken", accessToken);
       axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
       return accessToken;
     } catch (err) {
@@ -80,6 +86,7 @@ const Signin = () => {
       return null;
     }
   };
+
   axios.interceptors.response.use(
     res => res,
     async error => {
@@ -127,7 +134,9 @@ const Signin = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       console.log("Social login success:", user);
-      localStorage.setItem("token", await user.getIdToken());
+      const token = await user.getIdToken();
+      localStorage.setItem("accessToken", token);
+      setIsLoggedIn(true);
       alert(`Welcome, ${user.displayName || user.email}`);
       navigate("/symptoms");
     } catch (error) {
@@ -154,90 +163,88 @@ const Signin = () => {
   };
 
   return (
-    <div>
-      <div className="min-h-screen bg-gray-200 flex justify-center items-center px-4">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6">
-          <h2 className="text-3xl font-bold text-center text-gray-800">Login With your Account</h2>
+    <div className="min-h-screen bg-gray-200 flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md bg-white rounded-2xl  shadow-xl p-8 space-y-6">
+        <h2 className="text-3xl font-bold text-center text-gray-800">Login With your Account</h2>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="relative">
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={form.email}
-                onChange={handleChange}
-                className="w-full px-4 py-3 pr-10 rounded-md border border-gray-300 focus:ring-2 focus:ring-green-400 outline-none text-gray-700"
-              />
-              <MdOutlineMailOutline className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400" />
-            </div>
-
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                placeholder="Password"
-                value={form.password}
-                onChange={handleChange}
-                className="w-full px-4 py-3 pr-10 rounded-md border border-gray-300 focus:ring-2 focus:ring-green-400 outline-none text-gray-700"
-              />
-              {showPassword ? (
-                <LiaEyeSlashSolid
-                  className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 cursor-pointer"
-                  onClick={() => setShowPassword(false)}
-                />
-              ) : (
-                <LiaEyeSolid
-                  className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 cursor-pointer"
-                  onClick={() => setShowPassword(true)}
-                />
-              )}
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-3 bg-gradient-to-r from-green-400 to-sky-400 text-white font-semibold rounded-md hover:opacity-90 transition"
-            >
-              Sign In
-            </button>
-          </form>
-
-          <div className="flex items-center gap-4">
-            <hr className="flex-1 border-t border-gray-300" />
-            <span className="text-sm text-gray-500">or continue with</span>
-            <hr className="flex-1 border-t border-gray-300" />
-          </div>
-
-          <div className="flex justify-center gap-4">
-            <div
-              onClick={() => handleSocialSignup("facebook")}
-              className="w-10 h-10 flex items-center justify-center bg-blue-600 text-white rounded-full cursor-pointer hover:scale-105 transition"
-            >
-              <FaFacebookF />
-            </div>
-
-            <img
-              src={goog}
-              alt="Google"
-              onClick={() => handleSocialSignup("google")}
-              className="w-10 h-10 cursor-pointer hover:scale-105 transition"
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <div className="relative">
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={form.email}
+              onChange={handleChange}
+              className="w-full px-4 py-3 pr-10 rounded-md border border-gray-300 focus:ring-2 focus:ring-green-400 outline-none text-gray-700"
             />
-
-            <div
-              onClick={() => handleSocialSignup("twitter")}
-              className="w-10 h-10 flex items-center justify-center text-sky-500 border border-sky-500 rounded-full cursor-pointer hover:scale-105 transition"
-            >
-              <FaTwitter />
-            </div>
+            <MdOutlineMailOutline className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400" />
           </div>
 
-          <p className="text-center text-sm text-gray-600">
-            Don't have an account yet?{" "}
-            <a href="/signup" className="text-green-600 font-medium hover:underline">
-              Signup
-            </a>
-          </p>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+              value={form.password}
+              onChange={handleChange}
+              className="w-full px-4 py-3 pr-10 rounded-md border border-gray-300 focus:ring-2 focus:ring-green-400 outline-none text-gray-700"
+            />
+            {showPassword ? (
+              <LiaEyeSlashSolid
+                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+                onClick={() => setShowPassword(false)}
+              />
+            ) : (
+              <LiaEyeSolid
+                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+                onClick={() => setShowPassword(true)}
+              />
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="w-full py-3 bg-gradient-to-r from-green-400 to-sky-400 text-white font-semibold rounded-md hover:opacity-90 transition"
+          >
+            Sign In
+          </button>
+        </form>
+
+        <div className="flex items-center gap-4">
+          <hr className="flex-1 border-t border-gray-300" />
+          <span className="text-sm text-gray-500">or continue with</span>
+          <hr className="flex-1 border-t border-gray-300" />
         </div>
+
+        <div className="flex justify-center gap-4">
+          <div
+            onClick={() => handleSocialSignup("facebook")}
+            className="w-10 h-10 flex items-center justify-center bg-blue-600 text-white rounded-full cursor-pointer hover:scale-105 transition"
+          >
+            <FaFacebookF />
+          </div>
+
+          <img
+            src={goog}
+            alt="Google"
+            onClick={() => handleSocialSignup("google")}
+            className="w-10 h-10 cursor-pointer hover:scale-105 transition"
+          />
+
+          <div
+            onClick={() => handleSocialSignup("twitter")}
+            className="w-10 h-10 flex items-center justify-center text-sky-500 border border-sky-500 rounded-full cursor-pointer hover:scale-105 transition"
+          >
+            <FaTwitter />
+          </div>
+        </div>
+
+        <p className="text-center text-sm text-gray-600">
+          Don't have an account yet?{" "}
+          <a href="/signup" className="text-green-600 font-medium hover:underline">
+            Signup
+          </a>
+        </p>
       </div>
     </div>
   );
