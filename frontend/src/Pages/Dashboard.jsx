@@ -27,8 +27,34 @@ const Dashboard = () => {
 
   const downloadExcel = async () => {
     try {
-      const symptoms = await fetchSymptoms();
-      const worksheet = XLSX.utils.json_to_sheet(symptoms);
+      const rawSymptoms = await fetchSymptoms();
+  
+      const formatted = rawSymptoms.map((item) => ({
+        "Patient Name": item.fullName || "",
+        "Email": item.email || "",
+        "Gender": item.gender || "",
+        "Age": item.age || "",
+        "Nationality": item.nationality || "",
+        "Quartier & Region": `${item.quartier || ""}, ${item.region || ""}`,
+        "Symptoms": Array.isArray(item.howDoYouFeeling) ? item.howDoYouFeeling.join(", ") : item.howDoYouFeeling || "",
+        "Duration of Illness": item.durationOfDiseases || "",
+        "Session": item.session || "",
+        "Other Services": Array.isArray(item.whichOtherSevicesDoYouWant)
+          ? item.whichOtherSevicesDoYouWant.join(", ")
+          : item.whichOtherSevicesDoYouWant || "",
+        "Created At": item.createdAt
+          ? new Date(item.createdAt).toLocaleString("en-US", {
+              weekday: "short",
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "",
+      }));
+  
+      const worksheet = XLSX.utils.json_to_sheet(formatted);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Symptoms");
       XLSX.writeFile(workbook, "symptoms.xlsx");
@@ -39,6 +65,22 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+  const handleSelect = (item) => {
+    setQuery(item.fullName || ""); 
+    setSearchSmptom(item);
+    setShowDropdown(false);
+  };
+  useEffect(() => {
+    if (query.trim()) {
+      const filtered = symptoms.filter((item) =>
+        (item.fullName || "").toLowerCase().includes(query.toLowerCase())
+      );
+      setResults(filtered);
+    } else {
+      setResults([]);
+    }
+  }, [query, symptoms]);
+  
 
   useEffect(() => {
     const fetchSymptoms = async () => {
@@ -121,6 +163,7 @@ const Dashboard = () => {
               <input
                 type="text"
                 value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 onFocus={() => {
                   if (results.length > 0) setShowDropdown(true);
                 }}
@@ -128,13 +171,11 @@ const Dashboard = () => {
                 className="block w-full sm:w-80 p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Search for patients"
               />
-
               {loading && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                   <div className="animate-spin h-4 w-4 border-2 border-blue-500 rounded-full border-t-transparent"></div>
                 </div>
               )}
-
               {error && (
                 <div className="absolute top-full mt-1 w-full sm:w-80 bg-red-50 text-red-800 text-xs p-2 rounded border border-red-200">
                   {error}
@@ -277,7 +318,7 @@ const Dashboard = () => {
       <div className="flex justify-center my-6">
         <button
           onClick={downloadExcel}
-          className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 disabled:opacity-50"
+          className="flex items-center gap-2 bg-cyan-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 disabled:opacity-50"
         >
           <FaFileDownload className="w-5 h-5" />
           Download Excel

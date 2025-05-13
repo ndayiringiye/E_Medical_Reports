@@ -42,7 +42,7 @@ const symptomSchema = mongoose.Schema({
     whichOtherSevicesDoYouWant: {
         type: String,
         required: true,
-    }
-})
+    }, 
+},{Timestamps : true})
 const Symptom = mongoose.model("Symptom", symptomSchema);
 export default Symptom;

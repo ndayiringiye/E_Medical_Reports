@@ -12,6 +12,7 @@ const Response = () => {
   const [text, setText] = useState("");
   const [users, setUsers] = useState([]);
   const [receiverEmail, setReceiverEmail] = useState("");
+  
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -33,16 +34,16 @@ const Response = () => {
     e.preventDefault();
     setLoading(true);
   
-  if (!isValidEmail(receiverEmail)) {
-    toast.error("Invalid email address");
-    setLoading(false);
-    return;
-  }
+    if (!isValidEmail(receiverEmail)) {
+      toast.error("Invalid email address");
+      setLoading(false);
+      return;
+    }
     try {
       const payload = {
         from: "ndayiringiyedavid394@gmail.com", 
         to: receiverEmail,
-        subject: "Welcame to the E_Medical Reports",
+        subject: "Welcome to the E_Medical Reports",
         html: `<p>${text}</p>`,
       };
       const response = await axios.post(
@@ -78,6 +79,18 @@ const Response = () => {
 
   if (loading) return <p className="text-center text-lg text-gray-600">Loading...</p>;
 
+  const getFormattedDate = () => {
+    const dateToUse = symptom?.createdAt ? new Date(symptom.createdAt) : new Date();
+    return dateToUse.toLocaleString("en-US", {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }) + (symptom?.createdAt ? "" : " (estimated)");
+  };
+
   return (
     <div>
       <ToastContainer />
@@ -97,26 +110,19 @@ const Response = () => {
           </div>
           <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm sm:shadow-md">
             <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">Location & Illness</h2>
-            <p><strong>Quartier & Region:</strong> {symptom?.quartier}</p>
+            <p><strong>Quartier & Region:</strong> {symptom?.quartier?.join(', ')}</p>
             <p><strong>Symptoms:</strong> {symptom?.howDoYouFeeling}</p>
-            <p><strong>Duration of illness:</strong> {symptom?.durationOfDiseases}</p>
+            <p><strong>Duration of illness:</strong> {symptom?.durationOfDiseases?.join(', ')}</p>
           </div>
           <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm sm:shadow-md">
             <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">Services & Timing</h2>
             <p><strong>Session:</strong> {symptom?.session}</p>
             <p><strong>Other services:</strong> {symptom?.whichOtherSevicesDoYouWant}</p>
-            <p><strong>Date/Time:</strong> {new Date(symptom?.createdAt).toLocaleString("en-US", {
-              weekday: "short",
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}</p>
+            <p><strong>Date/Time:</strong> {getFormattedDate()}</p>
           </div>
         </div>
         <div className="mt-8 sm:mt-10 max-w-2xl sm:max-w-3xl text-center text-gray-600 text-sm sm:text-base px-4">
-          This information helps the admin to better understand the patient’s situation and send them a personalized message.
+          This information helps the admin to better understand the patient's situation and send them a personalized message.
         </div>
         <div className="w-11/12 mx-auto px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -128,7 +134,6 @@ const Response = () => {
                 <FaPaperPlane className="text-cyan-500" />
                 Respond to Patient
               </h1>
-
               <div className="mb-4">
                 <label htmlFor="receiverEmail" className="block text-gray-700 text-sm font-bold mb-2">
                   Select Recipient Email:
@@ -179,5 +184,3 @@ const Response = () => {
   );
 };
 export default Response;
-
-

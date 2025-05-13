@@ -53,8 +53,25 @@ export default {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			}
-  		}
-  	}
+  		},
+  		backgroundImage: {
+  			'grid-pattern': "",
+  			'grid-pattern-light': ""
+  		},
+		  animation: {
+			shimmer: "shimmer 2s infinite",
+			pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+		  },
+		  keyframes: {
+			shimmer: {
+			  "100%": { transform: "translateX(100%)" },
+			},
+		  },
+		  screens:{
+			iphone: "270px",
+			sms:"360px"
+		  },
+		},
   },
   plugins: [require("tailwindcss-animate")],
 }

@@ -8,7 +8,3 @@ export const connectdb = async () => {
         console.log("database connection failed :", error)
     }
 }
-
-// PORT=4000
-// PASSWORD= 6awF4q62gHBZpras
-// MONGO_URI= mongodb+srv://ndayiringiyedavid120:6awF4q62gHBZpras@cluster0.a13jreo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0

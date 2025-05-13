@@ -6,8 +6,8 @@ import Gates from "./Components/Gates";
 import Symptoms from "./Pages/Symptoms";
 import Dashboard from "./Pages/Dashboard";
 import Response from "./Pages/Response";
-import { Message } from "./Pages/Message";
 import { AuthProvider } from "./Components/AuthContext.jsx";
+import AboutUs from "./Pages/AboutUs";
 
 const App = () => {
   return (
@@ -21,7 +21,8 @@ const App = () => {
             <Route path="/symptoms" element={<Symptoms />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/response/:symptomId" element={<Response />} />
-            <Route path="/messages" element={<Message />} />
+            <Route path="/about" element={<AboutUs />} />
+
           </Route>
         </Routes>
       </BrowserRouter>
