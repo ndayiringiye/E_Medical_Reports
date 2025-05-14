@@ -77,7 +77,13 @@ const Response = () => {
     fetchSymptom();
   }, [symptomId]);
 
-  if (loading) return <p className="text-center text-lg text-gray-600">Loading...</p>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+          <span className="text-lg text-gray-700">Loading...</span>
+      </div>
+    );
+  }
 
   const getFormattedDate = () => {
     const dateToUse = symptom?.createdAt ? new Date(symptom.createdAt) : new Date();
@@ -183,4 +189,5 @@ const Response = () => {
     </div>
   );
 };
+
 export default Response;

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaFileDownload } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import "jspdf-autotable";
+import Swal from 'sweetalert2';
 
 
 
@@ -16,6 +17,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searcSymptom, setSearchSmptom] = useState(null);
+  const [currentDateTime, setCurrentDateTime] = useState(new Date().toLocaleString());
+
 
   const handleStateResponse = (symptomId) => {
     navigate(`/response/${symptomId}`);
@@ -28,7 +31,7 @@ const Dashboard = () => {
   const downloadExcel = async () => {
     try {
       const rawSymptoms = await fetchSymptoms();
-  
+
       const formatted = rawSymptoms.map((item) => ({
         "Patient Name": item.fullName || "",
         "Email": item.email || "",
@@ -44,16 +47,16 @@ const Dashboard = () => {
           : item.whichOtherSevicesDoYouWant || "",
         "Created At": item.createdAt
           ? new Date(item.createdAt).toLocaleString("en-US", {
-              weekday: "short",
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })
+            weekday: "short",
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })
           : "",
       }));
-  
+
       const worksheet = XLSX.utils.json_to_sheet(formatted);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Symptoms");
@@ -66,7 +69,7 @@ const Dashboard = () => {
     }
   };
   const handleSelect = (item) => {
-    setQuery(item.fullName || ""); 
+    setQuery(item.fullName || "");
     setSearchSmptom(item);
     setShowDropdown(false);
   };
@@ -80,15 +83,18 @@ const Dashboard = () => {
       setResults([]);
     }
   }, [query, symptoms]);
-  
 
   useEffect(() => {
     const fetchSymptoms = async () => {
+      setLoading(true);
       try {
         const res = await axios.get("http://localhost:4000/api/user/getsymptoms");
         setSymptoms(res.data.data);
       } catch (error) {
         console.error("Failed to fetch symptoms:", error);
+        setError("Failed to load symptoms.");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -96,22 +102,44 @@ const Dashboard = () => {
   }, []);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this symptom?")) return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'Are you sure you want to delete this symptom?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+    });
 
-    try {
-      await axios.delete(`http://localhost:4000/api/user/${id}`);
-      setSymptoms((prev) => prev.filter((symptom) => symptom._id !== id));
-    } catch (error) {
-      console.error("Failed to delete symptom:", error);
-      alert("Delete failed! Try again.");
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`http://localhost:4000/api/user/deleteSymptom/${id}`);
+        Swal.fire('Deleted!', 'The symptom has been deleted.', 'success');
+      } catch (error) {
+        console.error('Error deleting symptom:', error);
+        Swal.fire('Error!', 'Failed to delete the symptom.', 'error');
+      }
     }
   };
+useEffect(() => {
+  const interval = setInterval(() => {
+    setCurrentDateTime(new Date().toLocaleString());
+  }, 1000);
+  return () => clearInterval(interval);
+}, []);
 
-
+if (loading) {
+  return (
+    <div className="h-screen flex items-center justify-center bg-white">
+      <div className="animate-spin h-10 w-10 border-4 border-cyan-500 rounded-full border-t-transparent"></div>
+    </div>
+  );
+}
   return (
     <div>
       <div className="p-4">
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-white">
+        <div className="relative  shadow-md sm:rounded-lg bg-white">
           <div className="flex flex-col sm:flex-row sm:items-center items-stretch justify-between w-full gap-4 p-4">
             <div className="relative w-full sm:w-auto flex justify-center sm:justify-start">
               <button
@@ -127,7 +155,7 @@ const Dashboard = () => {
                   >
                     <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
                   </svg>
-                  {new Date().toLocaleDateString()}
+                  {new Date().toLocaleString()} 
                 </span>
                 <svg
                   className="w-2.5 h-2.5 ml-2"
@@ -159,7 +187,6 @@ const Dashboard = () => {
                   />
                 </svg>
               </div>
-
               <input
                 type="text"
                 value={query}
@@ -181,7 +208,6 @@ const Dashboard = () => {
                   {error}
                 </div>
               )}
-
               {showDropdown && results.length > 0 && (
                 <ul className="absolute top-full mt-1 w-full sm:w-80 bg-white border border-gray-200 rounded-lg shadow z-50 max-h-60 overflow-auto">
                   {results.map((item) => (
@@ -195,7 +221,6 @@ const Dashboard = () => {
                   ))}
                 </ul>
               )}
-
               {showDropdown && query && results.length === 0 && !loading && (
                 <div className="absolute top-full mt-1 w-full sm:w-80 bg-white border border-gray-200 rounded-lg shadow z-50 p-3 text-center text-gray-500">
                   No matching results found
