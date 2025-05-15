@@ -53,7 +53,7 @@ const Signin = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("https://e-medical-reports-onbackend.onrender.com/api/user/signin", form);
+      const res = await axios.post("http://localhost:4000/api/user/signin", form);
       const { accessToken, role } = res.data;
 
       localStorage.setItem("accessToken", accessToken);
@@ -73,7 +73,7 @@ const Signin = () => {
 
   const refreshToken = async () => {
     try {
-      const res = await axios.get("https://e-medical-reports-onbackend.onrender.com/api/refresh_token", {
+      const res = await axios.get("http://localhost:4000/api/refresh_token", {
         withCredentials: true,
       });
 
