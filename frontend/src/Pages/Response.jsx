@@ -47,7 +47,7 @@ const Response = () => {
         html: `<p>${text}</p>`,
       };
       const response = await axios.post(
-        "http://localhost:4000/api/user/email/send",
+        "https://e-medical-reports-onbackend.onrender.com/api/user/email/send",
         payload
       );
   
