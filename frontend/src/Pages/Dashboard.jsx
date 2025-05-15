@@ -20,7 +20,7 @@ const Dashboard = () => {
     navigate(`/response/${symptomId}`);
   };
   const fetchSymptoms = async () => {
-    const res = await axios.get("https://e-medical-reports-onbackend.onrender.com/api/user/getsymptoms");
+    const res = await axios.get("http://localhost:4000/api/user/getsymptoms");
     return res.data.data || [];
   };
 
@@ -84,7 +84,7 @@ const Dashboard = () => {
     const fetchSymptoms = async () => {
       setLoading(true);
       try {
-        const res = await axios.get("https://e-medical-reports-onbackend.onrender.com/api/user/getsymptoms");
+        const res = await axios.get("http://localhost:4000/api/user/getsymptoms");
         setSymptoms(res.data.data);
       } catch (error) {
         console.error("Failed to fetch symptoms:", error);
@@ -110,7 +110,7 @@ const Dashboard = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`https://e-medical-reports-onbackend.onrender.com/api/user/deleteSymptom/${id}`);
+        await axios.delete(`http://localhost:4000/api/user/deleteSymptom/${id}`);
         Swal.fire('Deleted!', 'The symptom has been deleted.', 'success');
       } catch (error) {
         console.error('Error deleting symptom:', error);
