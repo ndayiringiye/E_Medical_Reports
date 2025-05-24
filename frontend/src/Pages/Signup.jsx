@@ -65,7 +65,7 @@ const Signup = () => {
     try {
       setError("");
       const res = await axios.post(
-        "https://e-medical-reports-backd.onrender.com/api/user/signup",
+        "https://e-medical-reports-b.onrender.com/api/user/signup",
         {
           username: form.username,
           email: form.email,
