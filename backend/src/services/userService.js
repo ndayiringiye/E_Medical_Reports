@@ -58,7 +58,7 @@ export const signin = async (req, res) => {
             { expiresIn: "1h" }
         );
 
-        const refreshToken = jwt.sign(
+         const refreshToken = jwt.sign(
             { userId: existUser._id },
             process.env.REFRESH_TOKEN_SECRET,
             { expiresIn: "7d" }
