@@ -17,7 +17,7 @@ const NavBar = () => {
 
     const handleLogout = async () => {
         try {
-            await axios.get("https://e-medical-reports-backd.onrender.com/api/user/signout", { withCredentials: true });
+            await axios.get("https://e-medical-reports-b.onrender.com/api/user/signout", { withCredentials: true });
             logout();
             navigate("/signin");
         } catch (error) {
