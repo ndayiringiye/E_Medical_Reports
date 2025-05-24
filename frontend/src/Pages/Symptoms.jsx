@@ -42,7 +42,7 @@ const Symptoms = () => {
     } else {
       try {
         setIsSubmitting(true);
-        const response = await axios.post("https://e-medical-reports-backd.onrender.com/api/user/symptoms", formData);
+        const response = await axios.post("https://e-medical-reports-b.onrender.com/api/user/symptoms", formData);
         console.log("Submitted:", response.data);
         setShowPopup(true);
       } catch (error) {
