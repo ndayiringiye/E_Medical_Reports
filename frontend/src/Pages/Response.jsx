@@ -16,7 +16,7 @@ const Response = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/api/user/getUsers");
+        const res = await axios.get("https://e-medical-reports-backd.onrender.com/api/user/getUsers");
         setUsers(res.data.data);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -47,7 +47,7 @@ const Response = () => {
         html: `<p>${text}</p>`,
       };
       const response = await axios.post(
-        "http://localhost:4000/api/user/email/send",
+        "https://e-medical-reports-backd.onrender.com/api/user/email/send",
         payload
       );
   
@@ -66,7 +66,7 @@ const Response = () => {
   useEffect(() => {
     const fetchSymptom = async () => {
       try {
-        const res = await axios.get(`http://localhost:4000/api/user/getSingleSymptom/${symptomId}`);
+        const res = await axios.get(`https://e-medical-reports-backd.onrender.com/api/user/getSingleSymptom/${symptomId}`);
         setSymptom(res.data.data);
       } catch (err) {
         console.error("Error fetching symptom:", err);
