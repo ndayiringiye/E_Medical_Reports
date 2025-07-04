@@ -20,7 +20,7 @@ const Dashboard = () => {
     navigate(`/response/${symptomId}`);
   };
   const fetchSymptoms = async () => {
-    const res = await axios.get("https://e-medical-reports-b.onrender.com/api/user/getsymptoms");
+    const res = await axios.get("http://localhost:4000/api/user/getsymptoms");
     return res.data.data || [];
   };
 
