@@ -16,7 +16,7 @@ const Response = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("https://e-medical-reports-b.onrender.com/api/user/getUsers");
+        const res = await axios.get("http://localhost:4000/api/user/getUsers");
         setUsers(res.data.data);
       } catch (error) {
         console.error("Error fetching users:", error);
