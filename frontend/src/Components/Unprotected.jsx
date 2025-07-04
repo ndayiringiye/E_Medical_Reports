@@ -1,23 +1,17 @@
 import React, { useState } from "react";
-import condom from "../../public/images/condom.png";
-import ibinini from "../../public/images/ibinini.png";
-import screening from "../../public/images/sreening.png";
-import testing from "../../public/images/testing.png";
-import peer from "../../public/images/peers.png";
-import concs from "../../public/images/concs.png";
 
 const cards = [
   {
     title: "Supportive Services",
-    images: [condom, ibinini],
+    images: ["/images/condom.png", "/images/ibinini.png"],
   },
   {
     title: "Health Checkup",
-    images: [screening, testing],
+    images: ["/images/sreening.png", "/images/testing.png"],
   },
   {
     title: "Youth Counseling",
-    images: [peer, concs],
+    images: ["/images/peers.png", "/images/concs.png"],
   },
 ];
 
@@ -45,7 +39,9 @@ export const Unprotected = () => {
             onMouseEnter={() => handleMouseEnter(index)}
             onMouseLeave={handleMouseLeave}
           >
-            <h3 className="text-xl font-semibold text-cyan-600 mb-4">{card.title}</h3>
+            <h3 className="text-xl font-semibold text-cyan-600 mb-4">
+              {card.title}
+            </h3>
             <div className="h-48 flex justify-center items-center overflow-hidden">
               <img
                 src={
@@ -54,7 +50,7 @@ export const Unprotected = () => {
                     : card.images[0]
                 }
                 alt={card.title}
-                className="h-40 object-contain"
+                className="h-40 object-contain transition duration-300"
               />
             </div>
           </div>
